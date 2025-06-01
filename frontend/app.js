@@ -1,6 +1,6 @@
 // DHL SOF Warehouse Scheduler - Frontend JavaScript
 
-const API_BASE = '/api';
+const API_BASE = 'https://dhl-sofia.onrender.com/api';
 
 // Global state
 let currentView = 'dashboard';
