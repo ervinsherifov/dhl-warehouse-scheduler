@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHL SOF Warehouse Scheduler</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <div class="logo">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="header-text">
+                            <h1>DHL SOF Warehouse</h1>
+                            <p>Event Schedule Dashboard</p>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="current-time" id="currentTime">--:--</div>
+                        <div class="current-date" id="currentDate">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-card yellow">
+                    <div class="stat-number" id="todayEvents">0</div>
+                    <div class="stat-label">Today's Events</div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-number" id="upcomingEvents">0</div>
+                    <div class="stat-label">Total Upcoming</div>
+                </div>
+                <div class="stat-card gray">
+                    <div class="stat-number" id="completedEvents">0</div>
+                    <div class="stat-label">Completed Today</div>
+                </div>
+            </div>
+
+            <!-- Events Timeline -->
+            <div class="events-section">
+                <h2><i class="fas fa-calendar"></i> Upcoming Events</h2>
+                <div id="eventsList" class="events-list">
+                    <div class="loading">Loading events...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Form -->
+        <div id="eventForm" class="view">
+            <div class="form-container">
+                <div class="form-card">
+                    <div class="form-header">
+                        <div class="form-logo"></div>
+                        <h1>Create New Event</h1>
+                    </div>
+                    
+                    <div class="form-content">
+                        <div class="form-group">
+                            <label>Event Type *</label>
+                            <select id="eventType" required>
+                                <option value="">Select event type</option>
+                                <option value="Truck Arrival">Truck Arrival</option>
+                                <option value="Client Visit">Client Visit</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div id="truckFields" class="truck-fields" style="display: none;">
+                            <div class="form-group">
+                                <label>Truck Plate Number *</label>
+                                <input type="text" id="truckPlate" placeholder="e.g., SF1234AB">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Purpose *</label>
+                                <select id="purpose">
+                                    <option value="">Select purpose</option>
+                                    <option value="Loading">Loading</option>
+                                    <option value="Unloading">Unloading</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Load Type *</label>
+                                <select id="loadType">
+                                    <option value="">Select load type</option>
+                                    <option value="PTL">PTL (Partial Truck Load - 30 min)</option>
+                                    <option value="FTL">FTL (Full Truck Load - 1 hour)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" id="eventDate" required min="">
+                            </div>
+                            <div class="form-group">
+                                <label>Time (24h: 00:00-23:59) *</label>
+                                <input type="time" id="eventTime" required step="60">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Created By (Email) *</label>
+                            <input type="email" id="createdBy" placeholder="your.email@dhl.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Notes (Optional)</label>
+                            <textarea id="notes" placeholder="Additional notes..." rows="3"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="createEventBtn" class="btn btn-primary">Create Event</button>
+                            <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="view">
+            <div id="adminLogin" class="admin-login">
+                <div class="login-card">
+                    <div class="login-header">
+                        <i class="fas fa-cog"></i>
+                        <h2>Admin Access</h2>
+                        <p>Enter password to continue</p>
+                    </div>
+                    <div class="login-content">
+                        <input type="password" id="adminPassword" placeholder="Enter admin password">
+                        <button id="loginBtn" class="btn btn-primary">Login</button>
+                        <button id="backToDashboardBtn" class="btn btn-secondary">Back to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="adminContent" class="admin-content" style="display: none;">
+                <div class="admin-header">
+                    <div>
+                        <h1><i class="fas fa-cog"></i> Admin Panel</h1>
+                    </div>
+                    <div class="admin-actions">
+                        <button id="exportBtn" class="btn btn-success"><i class="fas fa-download"></i> Export CSV</button>
+                        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </div>
+
+                <div class="admin-filters">
+                    <select id="eventFilter">
+                        <option value="all">All Events</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="deleted">Deleted</option>
+                    </select>
+                    <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+                </div>
+
+                <div class="table-container">
+                    <table id="adminEventsTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>Created By</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminEventsBody">
+                            <tr><td colspan="6" class="loading">Loading events...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="floating-nav">
+        <button id="dashboardBtn" class="nav-btn active" title="Dashboard">
+            <i class="fas fa-eye"></i>
+        </button>
+        <button id="formBtn" class="nav-btn" title="Create Event">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button id="adminBtn" class="nav-btn" title="Admin Panel">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

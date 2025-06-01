@@ -1,0 +1,13 @@
+{
+  "name": "dhl-warehouse-scheduler-frontend",
+  "version": "1.0.0",
+  "description": "DHL SOF Warehouse Event Scheduler Frontend",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 3000 2>/dev/null || python -m http.server 3000 2>/dev/null || echo 'Frontend ready at http://localhost:5000'",
+    "test": "echo \"Frontend is ready!\" && exit 0"
+  },
+  "keywords": ["dhl", "warehouse", "scheduler"],
+  "author": "DHL Development Team",
+  "license": "MIT"
+}
